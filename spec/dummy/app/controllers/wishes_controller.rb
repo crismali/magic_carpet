@@ -4,6 +4,9 @@ class WishesController < ApplicationController
   def plain
   end
 
+  def locals
+  end
+
   # GET /wishes
   def index
     @wishes = Wish.all
