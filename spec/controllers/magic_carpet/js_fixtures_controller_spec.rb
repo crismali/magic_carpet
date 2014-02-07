@@ -17,15 +17,31 @@ module MagicCarpet
       it "interpretes the objects literally" do
         locals = {
           some_hash: { key: "value" },
-          some_array: [1,2,3],
-          some_number: 1,
+          some_array: [],
           some_string: "hello"
         }
         get :index, locals: locals, controller_name: "wishes", action_name: "locals", use_route: :magic_carpet
         expect(response.body).to match("some hash: value")
-        expect(response.body).to match("some array: 2")
-        expect(response.body).to match("some number: 1")
+        expect(response.body).to match(/some array: \[\]/)
         expect(response.body).to match("some string: hello")
+      end
+
+      it "interpretes numbers based on the number and type attributes" do
+        locals = {
+          my_float: { number: 1.5, type: "float" },
+          my_integer: { number: 1, type: "integer" }
+        }
+        get :index, locals: locals, controller_name: "wishes", action_name: "numbers", use_route: :magic_carpet
+        expect(response.body).to match("my float: 1.5, floored: 1")
+        expect(response.body).to match("my integer: 1, floated: 1.0")
+      end
+
+      it "interpretes the objects based on their model name" do
+        locals = {
+          my_wish: { text: "wish text", model_name: "Wish" }
+        }
+        get :index, locals: locals, controller_name: "wishes", action_name: "local_models", use_route: :magic_carpet
+        expect(response.body).to match("wish text")
       end
     end
 

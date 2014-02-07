@@ -7,6 +7,12 @@ class WishesController < ApplicationController
   def locals
   end
 
+  def local_models
+  end
+
+  def numbers
+  end
+
   # GET /wishes
   def index
     @wishes = Wish.all
