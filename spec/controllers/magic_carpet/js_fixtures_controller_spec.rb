@@ -1,7 +1,17 @@
-require 'spec_helper'
+require "spec_helper"
 
 module MagicCarpet
   describe JsFixturesController do
+
+    it "renders a template based on the template param" do
+      get :index, controller_name: "Wishes", action_name: "locals", template: "plain", use_route: :magic_carpet
+      expect(response.body).to match("<h1>Plain</h1>\n")
+    end
+
+    it "renders based on controller and action names if there's no template param" do
+      get :index, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+      expect(response.body).to match("<h1>Plain</h1>\n")
+    end
 
     describe "fetching a view without variables" do
       it "returns the view's markup" do
@@ -9,6 +19,30 @@ module MagicCarpet
         expect(response.body).to match("<h1>Plain</h1>\n")
         expect(response.body).to match("<!DOCTYPE html>")
         expect(response.body).to match("<h1>Application Layout</h1>")
+      end
+    end
+
+    describe "rendering a partial" do
+
+      it "is done by passing the partial's path in the partial option" do
+        hash = {
+          wish: { model: "Wish" }
+        }
+        get :index, partial: "form", controller_name: "Wishes", use_route: :magic_carpet, instance_variables: hash
+        expect(response.body).to match("<form")
+        expect(response.body).to match("Create Wish")
+      end
+
+      it "passes collection through when passed" do
+        collection = [
+          { model: "Wish", text: "wish text 1", id: 1 },
+          { model: "Wish", text: "wish text 2", id: 2 },
+          { model: "Wish", text: "wish text 3", id: 3 }
+        ]
+        get :index, partial: "wish", collection: collection, controller_name: "Wishes", use_route: :magic_carpet
+        expect(response.body).to match("wish text 1")
+        expect(response.body).to match("wish text 2")
+        expect(response.body).to match("wish text 3")
       end
     end
 

@@ -4,7 +4,7 @@ require "ostruct"
 module MagicCarpet
   describe JsFixturesHelper do
 
-    describe "#process" do
+    describe "#process_variables" do
 
       it "doesn't change the true values" do
         original = { truncate: true }.with_indifferent_access
