@@ -11,11 +11,25 @@ module MagicCarpet
     private
 
     def content
+      set_instance_variables if params.key?(:instance_variables)
       controller.render_to_string "#{params[:controller_name]}/#{params[:action_name]}", options
     end
 
+    def set_instance_variables
+      instance_variables_hash = process_variables(params[:instance_variables])
+      instance_variables_hash.each do |name, value|
+        controller.instance_variable_set("@#{name}", value)
+      end
+    end
+
     def controller
-      @controller ||= self.class.const_get("#{params[:controller_name]}Controller").new
+      @controller ||= create_controller
+    end
+
+    def create_controller
+      new_controller = self.class.const_get("#{params[:controller_name]}Controller").new
+      new_controller.request = ActionDispatch::TestRequest.new
+      new_controller
     end
 
     def options

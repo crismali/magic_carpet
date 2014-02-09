@@ -29,7 +29,26 @@ module MagicCarpet
       end
     end
 
-    describe "fetching a view with instance variables"
+    describe "fetching a view with instance variables" do
+
+      it "sets the specified instance variables" do
+        instance_variables = {
+          wishes: [
+            { id: "1", model: "Wish", text: "first wish" },
+            { id: "2", model: "Wish", text: "second wish" },
+            { id: "3", model: "Wish", text: "third wish" }
+          ]
+        }
+        get :index, instance_variables: instance_variables, controller_name: "Wishes", action_name: "index", use_route: :magic_carpet
+
+        expect(response.body).to match("first wish")
+        expect(response.body).to match("second wish")
+        expect(response.body).to match("third wish")
+        expect(response.body).to match("/wishes/1")
+        expect(response.body).to match("/wishes/2")
+        expect(response.body).to match("/wishes/3")
+      end
+    end
 
     describe "fetching a view with a specified layout" do
 
