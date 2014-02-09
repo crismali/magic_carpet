@@ -41,12 +41,16 @@ module MagicCarpet
       options[:layout] = params[:layout] if params.key?(:layout)
       options[:locals] = process_variables(params[:locals]) if params.key?(:locals)
       if params.key?(:partial)
-        options[:partial] = params[:partial]
-        options[:collection] = process_array(params[:collection]) if params.key?(:collection)
-        [options]
+        [partial_options(options)]
       else
         [template_name, options]
       end
+    end
+
+    def partial_options(options)
+      options[:partial] = params[:partial]
+      options[:collection] = process_array(params[:collection]) if params.key?(:collection)
+      options
     end
   end
 end

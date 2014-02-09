@@ -3,22 +3,24 @@ require "spec_helper"
 module MagicCarpet
   describe JsFixturesController do
 
+    let(:body) { response.body }
+
     it "renders a template based on the template param" do
       get :index, controller_name: "Wishes", action_name: "locals", template: "plain", use_route: :magic_carpet
-      expect(response.body).to match("<h1>Plain</h1>\n")
+      expect(body).to match("<h1>Plain</h1>\n")
     end
 
     it "renders based on controller and action names if there's no template param" do
       get :index, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
-      expect(response.body).to match("<h1>Plain</h1>\n")
+      expect(body).to match("<h1>Plain</h1>\n")
     end
 
     describe "fetching a view without variables" do
       it "returns the view's markup" do
         get :index, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
-        expect(response.body).to match("<h1>Plain</h1>\n")
-        expect(response.body).to match("<!DOCTYPE html>")
-        expect(response.body).to match("<h1>Application Layout</h1>")
+        expect(body).to match("<h1>Plain</h1>\n")
+        expect(body).to match("<!DOCTYPE html>")
+        expect(body).to match("<h1>Application Layout</h1>")
       end
     end
 
@@ -29,8 +31,8 @@ module MagicCarpet
           wish: { model: "Wish" }
         }
         get :index, partial: "form", controller_name: "Wishes", use_route: :magic_carpet, instance_variables: hash
-        expect(response.body).to match("<form")
-        expect(response.body).to match("Create Wish")
+        expect(body).to match("<form")
+        expect(body).to match("Create Wish")
       end
 
       it "passes collection through when passed" do
@@ -40,9 +42,9 @@ module MagicCarpet
           { model: "Wish", text: "wish text 3", id: 3 }
         ]
         get :index, partial: "wish", collection: collection, controller_name: "Wishes", use_route: :magic_carpet
-        expect(response.body).to match("wish text 1")
-        expect(response.body).to match("wish text 2")
-        expect(response.body).to match("wish text 3")
+        expect(body).to match("wish text 1")
+        expect(body).to match("wish text 2")
+        expect(body).to match("wish text 3")
       end
     end
 
@@ -56,10 +58,10 @@ module MagicCarpet
           some_model: { model: "Wish", text: "wish text" }
         }
         get :index, locals: locals, controller_name: "Wishes", action_name: "locals", use_route: :magic_carpet
-        expect(response.body).to match("some hash: value")
-        expect(response.body).to match(/some array: \[\]/)
-        expect(response.body).to match("some string: hello")
-        expect(response.body).to match("some model: wish text")
+        expect(body).to match("some hash: value")
+        expect(body).to match(/some array: \[\]/)
+        expect(body).to match("some string: hello")
+        expect(body).to match("some model: wish text")
       end
     end
 
@@ -75,12 +77,12 @@ module MagicCarpet
         }
         get :index, instance_variables: instance_variables, controller_name: "Wishes", action_name: "index", use_route: :magic_carpet
 
-        expect(response.body).to match("first wish")
-        expect(response.body).to match("second wish")
-        expect(response.body).to match("third wish")
-        expect(response.body).to match("/wishes/1")
-        expect(response.body).to match("/wishes/2")
-        expect(response.body).to match("/wishes/3")
+        expect(body).to match("first wish")
+        expect(body).to match("second wish")
+        expect(body).to match("third wish")
+        expect(body).to match("/wishes/1")
+        expect(body).to match("/wishes/2")
+        expect(body).to match("/wishes/3")
       end
     end
 
@@ -88,14 +90,14 @@ module MagicCarpet
 
       it "returns the view's markup without the layout" do
         get :index, layout: false, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
-        expect(response.body).to eq("<h1>Plain</h1>\n")
-        expect(response.body).to_not match("<!DOCTYPE html>")
+        expect(body).to eq("<h1>Plain</h1>\n")
+        expect(body).to_not match("<!DOCTYPE html>")
       end
 
       it "returns the view's markup with the specified layout" do
         get :index, layout: "other_layout", controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
-        expect(response.body).to match("<h1>Other Layout</h1>")
-        expect(response.body).to_not match("<h1>Application Layout</h1>")
+        expect(body).to match("<h1>Other Layout</h1>")
+        expect(body).to_not match("<h1>Application Layout</h1>")
       end
     end
   end
