@@ -46,6 +46,18 @@ module MagicCarpet
         expect(body).to match("wish text 2")
         expect(body).to match("wish text 3")
       end
+
+      it "accepts the 'as' option" do
+        collection = [
+          { model: "OpenStruct", id: 1 },
+          { model: "User", id: 2 },
+          { model: "Wish", id: 3 }
+        ]
+        get :index, partial: "shared/id_able", collection: collection, as: "id_able", controller_name: "Wishes", use_route: :magic_carpet
+        expect(body).to match(/id: 1\n\s+class: OpenStruct/)
+        expect(body).to match(/id: 2\n\s+class: User/)
+        expect(body).to match(/id: 3\n\s+class: Wish/)
+      end
     end
 
     describe "fetching a view with local variables" do

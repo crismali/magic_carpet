@@ -1,3 +1,3 @@
 MagicCarpet::Engine.routes.draw do
-  root to: "js_fixtures#index/:fixture_controller/:fixture_action"
+  root to: "js_fixtures#index"
 end

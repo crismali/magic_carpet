@@ -50,6 +50,7 @@ module MagicCarpet
     def partial_options(options)
       options[:partial] = params[:partial]
       options[:collection] = process_array(params[:collection]) if params.key?(:collection)
+      options[:as] = params[:as] if params.key?(:as)
       options
     end
   end
