@@ -112,5 +112,16 @@ module MagicCarpet
         expect(body).to_not match("<h1>Application Layout</h1>")
       end
     end
+
+    it "sets flash messages according to flash parameter" do
+      flash = {
+        warning: "this is a flash message",
+        notice: "something noteworthy"
+      }
+      get :index, flash: flash, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+      expect(body).to match("warning: #{flash[:warning]}")
+      expect(body).to match("notice: #{flash[:notice]}")
+    end
+
   end
 end

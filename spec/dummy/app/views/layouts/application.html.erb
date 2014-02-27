@@ -8,6 +8,11 @@
 </head>
 <body>
 <h1>Application Layout</h1>
+<% flash.each do |type, content| %>
+  <p>
+    <%= "#{type}: #{content}" %>
+  </p>
+<% end %>
 <%= yield %>
 
 </body>

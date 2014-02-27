@@ -21,6 +21,12 @@ module MagicCarpet
       end
     end
 
+    def set_flash(controller_instance)
+      params[:flash].each do |type, message|
+        controller_instance.flash[type] = message
+      end
+    end
+
     def controller
       @controller ||= create_controller
     end
@@ -29,6 +35,7 @@ module MagicCarpet
       new_controller = self.class.const_get("#{params[:controller_name]}Controller").new
       new_controller.request = ActionDispatch::TestRequest.new
       set_instance_variables(new_controller) if params.key?(:instance_variables)
+      set_flash(new_controller) if params.key?(:flash)
       new_controller
     end
 
