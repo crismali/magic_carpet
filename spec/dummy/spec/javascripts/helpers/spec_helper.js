@@ -1,3 +1,5 @@
+//= require magic_carpet/application
+
 // Stub agent string for testing agent detection code
 function stubAgent(agentString) {
   var __originalNavigator = navigator;
