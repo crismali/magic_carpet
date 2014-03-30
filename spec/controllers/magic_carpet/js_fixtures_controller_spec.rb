@@ -120,5 +120,23 @@ module MagicCarpet
       expect(body).to match("warning: #{flash[:warning]}")
       expect(body).to match("notice: #{flash[:notice]}")
     end
+
+    describe "error handling" do
+
+      it "reports missing/misnamed controllers" do
+        get :index, controller_name: "NonExistant", action_name: "plain", use_route: :magic_carpet
+        expected = { error: "NonExistantController not found." }.to_json
+        expect(body).to eq(expected)
+        expect(response.code).to eq("400")
+      end
+
+      it "reports missing/misnamed models" do
+        locals = { wish: { model: "Dish", text: "wish text" } }
+        get :index, locals: locals, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+        expected = { error: "Dish not found." }.to_json
+        expect(body).to eq(expected)
+        expect(response.code).to eq("400")
+      end
+    end
   end
 end

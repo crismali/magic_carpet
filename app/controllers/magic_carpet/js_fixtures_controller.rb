@@ -8,6 +8,12 @@ module MagicCarpet
       render text: content
     end
 
+    rescue_from "NameError" do |exception|
+      missing_constant = exception.message.split("::").last
+      message = "#{missing_constant} not found."
+      render json: { error: message }, status: 400
+    end
+
     private
 
     def content
