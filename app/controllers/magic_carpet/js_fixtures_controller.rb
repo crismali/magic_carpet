@@ -28,9 +28,7 @@ module MagicCarpet
     end
 
     def set_flash(controller_instance)
-      params[:flash].each do |type, message|
-        controller_instance.flash[type] = message
-      end
+      controller_instance.flash.merge!(params[:flash])
     end
 
     def controller
