@@ -45,7 +45,7 @@ module MagicCarpet
 
     def options
       options = {}
-      options[:layout] = params[:layout] if params.key?(:layout)
+      options[:layout] = params.fetch(:layout, false)
       options[:locals] = process_variables(params[:locals]) if params.key?(:locals)
       if params.key?(:partial)
         [partial_options(options)]

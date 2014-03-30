@@ -6,7 +6,7 @@ module MagicCarpet
     let(:body) { response.body }
 
     it "renders a template based on the template param" do
-      get :index, controller_name: "Wishes", action_name: "locals", template: "plain", use_route: :magic_carpet
+      get :index, controller_name: "Wishes", template: "plain", use_route: :magic_carpet
       expect(body).to match("<h1>Plain</h1>\n")
     end
 
@@ -19,8 +19,6 @@ module MagicCarpet
       it "returns the view's markup" do
         get :index, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
         expect(body).to match("<h1>Plain</h1>\n")
-        expect(body).to match("<!DOCTYPE html>")
-        expect(body).to match("<h1>Application Layout</h1>")
       end
     end
 
@@ -101,7 +99,7 @@ module MagicCarpet
     describe "fetching a view with a specified layout" do
 
       it "returns the view's markup without the layout" do
-        get :index, layout: false, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+        get :index, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
         expect(body).to eq("<h1>Plain</h1>\n")
         expect(body).to_not match("<!DOCTYPE html>")
       end
@@ -118,10 +116,9 @@ module MagicCarpet
         warning: "this is a flash message",
         notice: "something noteworthy"
       }
-      get :index, flash: flash, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+      get :index, flash: flash, layout: true, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
       expect(body).to match("warning: #{flash[:warning]}")
       expect(body).to match("notice: #{flash[:notice]}")
     end
-
   end
 end
