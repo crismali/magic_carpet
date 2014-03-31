@@ -9,12 +9,32 @@ module MagicCarpet
     end
 
     rescue_from "NameError" do |exception|
-      missing_constant = exception.message.split("::").last
-      message = "#{missing_constant} not found."
-      render json: { error: message }, status: 400
+      if exception.name
+        message_fragment = exception.message.split("for").first
+        message = "#{message_fragment}for '#{template_name}' template."
+      else
+        missing_constant = exception.message.split("::").last
+        message = "#{missing_constant} not found."
+      end
+
+      render_error(message)
+    end
+
+    rescue_from "NoMethodError" do |exception|
+      line_info = exception.backtrace.find { |line| line.match(/app\/views\/.*\.html\./) }
+      message = "#{exception.class}: #{exception.message}\n#{line_info}"
+      render_error(message)
+    end
+
+    rescue_from "ActionView::MissingTemplate" do |exception|
+      render_error(exception.message)
     end
 
     private
+
+    def render_error(message)
+      render json: { error: message }, status: 400
+    end
 
     def content
       controller.render_to_string(*options)

@@ -23,7 +23,6 @@ module MagicCarpet
     end
 
     describe "rendering a partial" do
-
       it "is done by passing the partial's path in the partial option" do
         hash = {
           wish: { model: "Wish" }
@@ -59,7 +58,6 @@ module MagicCarpet
     end
 
     describe "fetching a view with local variables" do
-
       it "interpretes the objects accurately" do
         locals = {
           some_hash: { key: "value" },
@@ -76,7 +74,6 @@ module MagicCarpet
     end
 
     describe "fetching a view with instance variables" do
-
       it "sets the specified instance variables" do
         instance_variables = {
           wishes: [
@@ -97,7 +94,6 @@ module MagicCarpet
     end
 
     describe "fetching a view with a specified layout" do
-
       it "returns the view's markup without the layout" do
         get :index, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
         expect(body).to eq("<h1>Plain</h1>\n")
@@ -135,6 +131,35 @@ module MagicCarpet
         get :index, locals: locals, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
         expected = { error: "Dish not found." }.to_json
         expect(body).to eq(expected)
+        expect(response.code).to eq("400")
+      end
+
+      it "reports missing template errors" do
+        get :index, controller_name: "Wishes", template: "fake", use_route: :magic_carpet
+        expect(JSON.parse(body)["error"]).to match("Missing template wishes/fake, application/fake")
+        expect(response.code).to eq("400")
+      end
+
+      it "reports missing local variable errors" do
+        get :index, controller_name: "Wishes", template: "locals", use_route: :magic_carpet
+        expected = { error: "undefined local variable or method `some_hash' for 'locals' template." }.to_json
+        expect(body).to eq(expected)
+        expect(response.code).to eq("400")
+      end
+
+      it "reports missing partial errors" do
+        get :index, controller_name: "Wishes", partial: "zuh", use_route: :magic_carpet
+        expect(JSON.parse(body)["error"]).to match("Missing partial wishes/zuh, application/zuh")
+        expect(response.code).to eq("400")
+      end
+
+      it "reports no method errors" do
+        locals = { wish: { model: "User" } }
+        get :index, locals: locals, controller_name: "Wishes", partial: "wish", use_route: :magic_carpet
+        error = JSON.parse(body)["error"]
+        expect(error).to match("NoMethodError: undefined method `text' for #<User:")
+        expect(error).to match(/app\/views\/.*\.html\.erb:2/)
+        expect(error).to_not match("activesupport")
         expect(response.code).to eq("400")
       end
     end
