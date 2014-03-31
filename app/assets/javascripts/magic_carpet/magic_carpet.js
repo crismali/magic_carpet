@@ -1,6 +1,7 @@
 (MagicCarpet = {
   async: false,
   asyncComplete: true,
+  cache: {},
 
   initialize: function() {
     this.bindAll();
@@ -43,6 +44,16 @@
   },
 
   request: function(data) {
+    var cachedMarkup = this.cache[$.param(data)];
+    if (cachedMarkup) {
+      this.sandbox.innerHTML = cachedMarkup;
+    } else {
+      this.fetch(data);
+    }
+  },
+
+  fetch: function(data) {
+    this.lastRequest = data;
     this.asyncComplete = false;
     $.ajax({
       url: "/magic_carpet",
@@ -56,7 +67,9 @@
   },
 
   handleSuccess: function(markup) {
-    this.sandbox.innerHTML = markup;
+    var cacheKey = $.param(this.lastRequest);
+    this.cache[cacheKey] = markup;
+    this.request(this.lastRequest);
   },
 
   handleFailure: function(response) {

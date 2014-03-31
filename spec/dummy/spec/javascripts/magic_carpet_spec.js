@@ -17,6 +17,10 @@ describe("MagicCarpet", function() {
     expect(subject.asyncComplete).toBeTrue();
   });
 
+  it("has an object for caching request results", function(){
+    expect(subject.cache).toBeObject();
+  });
+
   describe("initialize", function() {
     beforeEach(function() {
       spyOn(subject, "cacheElements");
@@ -121,12 +125,36 @@ describe("MagicCarpet", function() {
   });
 
   describe("request", function(){
+    var requestData;
+    beforeEach(function() {
+      subject.cacheElements();
+      spyOn(subject, "fetch");
+      requestData = { some: "template" };
+    });
+
+    it("fetches the markup if the request isn't cached", function(){
+      subject.cache = {};
+      subject.request(requestData);
+      expect(subject.fetch).toHaveBeenCalledWith(requestData);
+      expect(subject.sandbox.innerHTML).toEqual("");
+    });
+
+    it("puts the markup on the page when it's already cached", function(){
+      subject.cache[$.param(requestData)] = "markup";
+      subject.request(requestData);
+      expect(subject.fetch).not.toHaveBeenCalled();
+      expect(subject.sandbox.innerHTML).toEqual("markup");
+    });
+  });
+
+  describe("fetch", function(){
     var arg;
     beforeEach(function() {
       subject.asyncComplete = true;
+      subject.lastRequest = undefined;
       spyOn($, "ajax").and.returnValue(promiseStub);
       subject.async = "default async setting";
-      subject.request("data");
+      subject.fetch("data");
       arg = $.ajax.calls.argsFor(0)[0];
     });
 
@@ -158,13 +186,30 @@ describe("MagicCarpet", function() {
     it("cleans up after itself", function(){
       expect(promiseStub.always).toHaveBeenCalledWith(subject.afterRequest);
     });
+
+    it("caches the request object", function(){
+      expect(subject.lastRequest).toEqual("data");
+    });
   });
 
   describe("handleSuccess", function(){
-    it("puts the markup in the sandbox", function(){
+    var lastRequest;
+    var markup;
+    beforeEach(function() {
       subject.appendSandbox();
-      subject.handleSuccess('<div id="fresh-markup"></div>');
+      lastRequest = { some: "template" };
+      subject.lastRequest = lastRequest;
+      subject.cache = {};
+      markup = '<div id="fresh-markup"></div>';
+      subject.handleSuccess(markup);
+    });
+
+    it("puts the markup in the sandbox", function(){
       expect($("#magic-carpet-sandbox #fresh-markup")[0]).toBeDefined();
+    });
+
+    it("caches the markup", function(){
+      expect(subject.cache[$.param(lastRequest)]).toEqual(markup);
     });
   });
 
