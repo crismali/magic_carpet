@@ -47,8 +47,12 @@ module MagicCarpet
       end
     end
 
-    def set_flash(controller_instance)
-      controller_instance.flash.merge!(params[:flash])
+    def set_controller_hashes(controller_instance)
+      [:flash, :params, :session].each do |hash_name|
+        if params.key?(hash_name)
+          controller_instance.send(hash_name).merge!(params[hash_name])
+        end
+      end
     end
 
     def controller
@@ -59,7 +63,7 @@ module MagicCarpet
       new_controller = self.class.const_get("#{params[:controller_name]}Controller").new
       new_controller.request = ActionDispatch::TestRequest.new
       set_instance_variables(new_controller) if params.key?(:instance_variables)
-      set_flash(new_controller) if params.key?(:flash)
+      set_controller_hashes(new_controller)
       new_controller
     end
 

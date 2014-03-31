@@ -113,12 +113,28 @@ module MagicCarpet
         notice: "something noteworthy"
       }
       get :index, flash: flash, layout: true, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
-      expect(body).to match("warning: #{flash[:warning]}")
-      expect(body).to match("notice: #{flash[:notice]}")
+      controller_flash = controller.send(:controller).flash
+      expect(controller_flash["warning"]).to eq(flash[:warning])
+      expect(controller_flash["notice"]).to eq(flash[:notice])
+    end
+
+    it "sets the session according to session parameter" do
+      session_hash = { user_id: "4", wish_id: "9" }
+      get :index, session: session_hash, layout: true, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+      controller_session = controller.send(:controller).session
+      expect(controller_session["user_id"]).to eq("4")
+      expect(controller_session["wish_id"]).to eq("9")
+    end
+
+    it "sets the params according to params parameter" do
+      params_hash = { user_id: "4", wish_id: "9" }
+      get :index, params: params_hash, layout: true, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+      controller_params = controller.send(:controller).params
+      expect(controller_params[:user_id]).to eq("4")
+      expect(controller_params[:wish_id]).to eq("9")
     end
 
     describe "error handling" do
-
       it "reports missing/misnamed controllers" do
         get :index, controller_name: "NonExistant", action_name: "plain", use_route: :magic_carpet
         expected = { error: "NonExistantController not found." }.to_json
