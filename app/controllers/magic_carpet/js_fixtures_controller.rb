@@ -41,7 +41,7 @@ module MagicCarpet
     end
 
     def set_instance_variables(controller_instance)
-      instance_variables_hash = process_variables(params[:instance_variables])
+      instance_variables_hash = hydrate(params[:instance_variables])
       instance_variables_hash.each do |name, value|
         controller_instance.instance_variable_set("@#{name}", value)
       end
@@ -74,7 +74,7 @@ module MagicCarpet
     def options
       options = {}
       options[:layout] = params.fetch(:layout, false)
-      options[:locals] = process_variables(params[:locals]) if params.key?(:locals)
+      options[:locals] = hydrate(params[:locals]) if params.key?(:locals)
       if params.key?(:partial)
         [partial_options(options)]
       else
@@ -84,7 +84,7 @@ module MagicCarpet
 
     def partial_options(options)
       options[:partial] = params[:partial]
-      options[:collection] = process_array(params[:collection]) if params.key?(:collection)
+      options[:collection] = hydrate(params[:collection]) if params.key?(:collection)
       options[:as] = params[:as] if params.key?(:as)
       options
     end
