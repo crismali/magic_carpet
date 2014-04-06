@@ -11,9 +11,8 @@
 
   bindAll: function() {
     for(var prop in this) {
-      if (typeof this[prop] === "function" && this.hasOwnProperty(prop)) {
+      if (typeof this[prop] === "function" && this.hasOwnProperty(prop))
         this.bind(this, prop);
-      }
     }
   },
 
@@ -31,7 +30,7 @@
 
   createSandbox: function() {
     var div = document.createElement("div");
-    div.setAttribute("id", "magic-carpet-sandbox");
+    div.setAttribute("id", "magic-carpet");
     return div;
   },
 

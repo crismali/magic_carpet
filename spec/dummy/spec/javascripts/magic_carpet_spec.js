@@ -6,7 +6,7 @@ describe("MagicCarpet", function() {
   });
 
   afterEach(function() {
-    $("#magic-carpet-sandbox").remove();
+    $("#magic-carpet").remove();
   });
 
   it("has its async property set to false by default", function(){
@@ -94,8 +94,8 @@ describe("MagicCarpet", function() {
       expect(subject.createSandbox().tagName).toEqual("DIV");
     });
 
-    it("returns a div with an ID of #magic-carpet-sandbox", function() {
-      expect(subject.createSandbox().getAttribute("id")).toEqual("magic-carpet-sandbox");
+    it("returns a div with an ID of #magic-carpet", function() {
+      expect(subject.createSandbox().getAttribute("id")).toEqual("magic-carpet");
     });
   });
 
@@ -107,7 +107,7 @@ describe("MagicCarpet", function() {
 
     it("appends the sandbox to the body", function() {
       expect(subject.sandbox).toBeDefined();
-      expect(subject.sandbox).toEqual($("body #magic-carpet-sandbox")[0]);
+      expect(subject.sandbox).toEqual($("body #magic-carpet")[0]);
     });
   });
 
@@ -205,7 +205,7 @@ describe("MagicCarpet", function() {
     });
 
     it("puts the markup in the sandbox", function(){
-      expect($("#magic-carpet-sandbox #fresh-markup")[0]).toBeDefined();
+      expect($("#magic-carpet #fresh-markup")[0]).toBeDefined();
     });
 
     it("caches the markup", function(){
