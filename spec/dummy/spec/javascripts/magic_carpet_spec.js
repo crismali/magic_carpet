@@ -80,10 +80,6 @@ describe("MagicCarpet", function() {
       subject.cacheElements();
     });
 
-    it("caches the body", function() {
-      expect(subject.body).toEqual($("body")[0]);
-    });
-
     it("caches a sandbox", function() {
       expect(subject.sandbox).toEqual("sandbox");
     });

@@ -24,7 +24,6 @@
   },
 
   cacheElements: function() {
-    this.body = document.body;
     this.sandbox = this.createSandbox();
   },
 
@@ -35,7 +34,7 @@
   },
 
   appendSandbox: function() {
-    this.body.appendChild(this.sandbox);
+    document.body.appendChild(this.sandbox);
   },
 
   emptySandbox: function() {
