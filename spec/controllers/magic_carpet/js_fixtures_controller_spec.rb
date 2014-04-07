@@ -61,13 +61,13 @@ module MagicCarpet
       it "interpretes the objects accurately" do
         locals = {
           some_hash: { key: "value" },
-          some_array: [],
+          some_array: ["element"],
           some_string: "hello",
           some_model: { model: "Wish", text: "wish text" }
         }
         get :index, locals: locals, controller_name: "Wishes", action_name: "locals", use_route: :magic_carpet
         expect(body).to match("some hash: value")
-        expect(body).to match(/some array: \[\]/)
+        expect(body).to match(/some array: \[\&quot;element\&quot;\]/)
         expect(body).to match("some string: hello")
         expect(body).to match("some model: wish text")
       end
