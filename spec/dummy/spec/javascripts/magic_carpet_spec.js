@@ -229,4 +229,37 @@ describe("MagicCarpet", function() {
       expect(subject.asyncComplete).toBeTrue();
     });
   });
+
+  describe("integration specs", function(){
+    beforeEach(function() {
+      subject.async = false;
+      subject.initialize();
+    });
+
+    describe("templates", function(){
+      it("renders templates with instance variables", function(){
+        subject.request({
+          controller_name: "Wishes",
+          template: "new",
+          instance_variables: {
+            wish: {
+              model: "Wish"
+            }
+          }
+        });
+        expect($("#magic-carpet #new_wish")[0]).toBeDefined();
+      });
+
+      describe("errors", function(){
+        it("renders missing controller errors", function(){
+          expect(function() {
+            subject.request({
+              controller_name: "blort",
+              action_name: "new"
+            });
+          }).toThrow(new Error("wrong constant name blortController for 'new' template."));
+        });
+      });
+    });
+  });
 });
