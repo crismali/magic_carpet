@@ -16,21 +16,28 @@ module MagicCarpet
         missing_constant = exception.message.split("::").last
         message = "#{missing_constant} not found."
       end
-
+      log_error(exception, message)
       render_error(message)
     end
 
     rescue_from "NoMethodError" do |exception|
       line_info = exception.backtrace.find { |line| line.match(/app\/views\/.*\.html\./) }
       message = "#{exception.class}: #{exception.message}\n#{line_info}"
+      log_error(exception, message)
       render_error(message)
     end
 
     rescue_from "ActionView::MissingTemplate" do |exception|
+      log_error(exception)
       render_error(exception.message)
     end
 
     private
+
+    def log_error(exception, message = exception.message)
+      message_with_backtrace = ([message] + exception.backtrace).join("\n\s\s\s\s")
+      logger.error(message_with_backtrace)
+    end
 
     def render_error(message)
       render json: { error: message }, status: 400

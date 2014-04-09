@@ -135,48 +135,78 @@ module MagicCarpet
     end
 
     describe "error handling" do
-      it "reports missing/misnamed controllers" do
-        get :index, controller_name: "NonExistant", action_name: "plain", use_route: :magic_carpet
-        expected = { error: "NonExistantController not found." }.to_json
-        expect(body).to eq(expected)
-        expect(response.code).to eq("400")
+
+      context "logging" do
+        it "logs NameErrors" do
+          expect(controller.logger).to receive(:error) do |message|
+            expect(message).to match("NonExistantController not found.")
+            expect(message).to match(/\n\s\s\s\s.*js_fixtures_controller.rb:\d\d:in \`const_get'\n/)
+          end
+          get :index, controller_name: "NonExistant", action_name: "plain", use_route: :magic_carpet
+        end
+
+        it "logs NoMethodErrors" do
+          expect(controller.logger).to receive(:error) do |message|
+            expect(message).to match("NoMethodError: undefined method `text' for #<User:")
+            expect(message).to match(/\n\s\s\s\s.*app\/views\/.*\.html\.erb:2/)
+          end
+          locals = { wish: { model: "User" } }
+          get :index, locals: locals, controller_name: "Wishes", partial: "wish", use_route: :magic_carpet
+        end
+
+        it "logs missing template errors" do
+          expect(controller.logger).to receive(:error) do |message|
+            expect(message).to match("Missing template wishes/fake, application/fake")
+            expect(message).to match(/\n\s\s\s\s.*gems\/actionpack/)
+          end
+          get :index, controller_name: "Wishes", template: "fake", use_route: :magic_carpet
+        end
       end
 
-      it "reports missing/misnamed models" do
-        locals = { wish: { model: "Dish", text: "wish text" } }
-        get :index, locals: locals, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
-        expected = { error: "Dish not found." }.to_json
-        expect(body).to eq(expected)
-        expect(response.code).to eq("400")
-      end
+      context "json" do
+        it "reports missing/misnamed controllers" do
+          get :index, controller_name: "NonExistant", action_name: "plain", use_route: :magic_carpet
+          expected = { error: "NonExistantController not found." }.to_json
+          expect(body).to eq(expected)
+          expect(response.code).to eq("400")
+        end
 
-      it "reports missing template errors" do
-        get :index, controller_name: "Wishes", template: "fake", use_route: :magic_carpet
-        expect(JSON.parse(body)["error"]).to match("Missing template wishes/fake, application/fake")
-        expect(response.code).to eq("400")
-      end
+        it "reports missing/misnamed models" do
+          locals = { wish: { model: "Dish", text: "wish text" } }
+          get :index, locals: locals, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+          expected = { error: "Dish not found." }.to_json
+          expect(body).to eq(expected)
+          expect(response.code).to eq("400")
+        end
 
-      it "reports missing local variable errors" do
-        get :index, controller_name: "Wishes", template: "locals", use_route: :magic_carpet
-        expected = { error: "undefined local variable or method `some_hash' for 'locals' template." }.to_json
-        expect(body).to eq(expected)
-        expect(response.code).to eq("400")
-      end
+        it "reports missing template errors" do
+          get :index, controller_name: "Wishes", template: "fake", use_route: :magic_carpet
+          expect(JSON.parse(body)["error"]).to match("Missing template wishes/fake, application/fake")
+          expect(response.code).to eq("400")
+        end
 
-      it "reports missing partial errors" do
-        get :index, controller_name: "Wishes", partial: "zuh", use_route: :magic_carpet
-        expect(JSON.parse(body)["error"]).to match("Missing partial wishes/zuh, application/zuh")
-        expect(response.code).to eq("400")
-      end
+        it "reports missing local variable errors" do
+          get :index, controller_name: "Wishes", template: "locals", use_route: :magic_carpet
+          expected = { error: "undefined local variable or method `some_hash' for 'locals' template." }.to_json
+          expect(body).to eq(expected)
+          expect(response.code).to eq("400")
+        end
 
-      it "reports no method errors" do
-        locals = { wish: { model: "User" } }
-        get :index, locals: locals, controller_name: "Wishes", partial: "wish", use_route: :magic_carpet
-        error = JSON.parse(body)["error"]
-        expect(error).to match("NoMethodError: undefined method `text' for #<User:")
-        expect(error).to match(/app\/views\/.*\.html\.erb:2/)
-        expect(error).to_not match("activesupport")
-        expect(response.code).to eq("400")
+        it "reports missing partial errors" do
+          get :index, controller_name: "Wishes", partial: "zuh", use_route: :magic_carpet
+          expect(JSON.parse(body)["error"]).to match("Missing partial wishes/zuh, application/zuh")
+          expect(response.code).to eq("400")
+        end
+
+        it "reports no method errors" do
+          locals = { wish: { model: "User" } }
+          get :index, locals: locals, controller_name: "Wishes", partial: "wish", use_route: :magic_carpet
+          error = JSON.parse(body)["error"]
+          expect(error).to match("NoMethodError: undefined method `text' for #<User:")
+          expect(error).to match(/app\/views\/.*\.html\.erb:2/)
+          expect(error).to_not match("activesupport")
+          expect(response.code).to eq("400")
+        end
       end
     end
   end
