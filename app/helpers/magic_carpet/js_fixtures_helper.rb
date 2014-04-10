@@ -3,7 +3,7 @@ module MagicCarpet
     attr_accessor :models
 
     def hydrate(value)
-      if value.is_a?(Array)
+      if array?(value)
         hydrate_array(value)
       elsif model?(value)
         hydrate_model(value)
@@ -52,6 +52,10 @@ module MagicCarpet
 
     def hash?(value)
       value.is_a?(Hash)
+    end
+
+    def array?(value)
+      value.is_a?(Array)
     end
 
     def array_as_hash?(value)
