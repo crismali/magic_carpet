@@ -9,13 +9,7 @@ module MagicCarpet
     end
 
     rescue_from "NameError" do |exception|
-      if exception.name
-        missing_variable_or_method = exception.message.split(" for ").first
-        message = "#{missing_variable_or_method} for '#{template_name}' template."
-      else
-        missing_constant = exception.message.split("::").last
-        message = "#{missing_constant} not found."
-      end
+      message = name_error_message(exception)
       log_error(exception, message)
       render_error(message)
     end
@@ -33,6 +27,16 @@ module MagicCarpet
     end
 
     private
+
+    def name_error_message(exception)
+      if exception.name
+        missing_variable_or_method = exception.message.split(" for ").first
+        "#{missing_variable_or_method} for '#{template_name}' template."
+      else
+        missing_constant = exception.message.split("::").last
+        "#{missing_constant} not found."
+      end
+    end
 
     def log_error(exception, message = exception.message)
       message_with_backtrace = ([message] + exception.backtrace).join("\n\s\s\s\s")
