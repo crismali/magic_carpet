@@ -10,8 +10,8 @@ module MagicCarpet
 
     rescue_from "NameError" do |exception|
       if exception.name
-        message_fragment = exception.message.split(" for ").first
-        message = "#{message_fragment} for '#{template_name}' template."
+        missing_variable_or_method = exception.message.split(" for ").first
+        message = "#{missing_variable_or_method} for '#{template_name}' template."
       else
         missing_constant = exception.message.split("::").last
         message = "#{missing_constant} not found."
