@@ -5,7 +5,7 @@ module MagicCarpet
     include JsFixturesHelper
 
     def index
-      render text: content
+      render text: controller.render_to_string(*build_options)
     end
 
     rescue_from "NameError" do |exception|
@@ -43,8 +43,16 @@ module MagicCarpet
       render json: { error: message }, status: 400
     end
 
-    def content
-      controller.render_to_string(*options)
+    def controller
+      @controller ||= create_controller
+    end
+
+    def create_controller
+      new_controller = self.class.const_get("#{params[:controller_name]}Controller").new
+      new_controller.request = ActionDispatch::TestRequest.new
+      set_instance_variables(new_controller) if params.key?(:instance_variables)
+      set_controller_hashes(new_controller)
+      new_controller
     end
 
     def set_instance_variables(controller_instance)
@@ -68,23 +76,7 @@ module MagicCarpet
       end
     end
 
-    def controller
-      @controller ||= create_controller
-    end
-
-    def create_controller
-      new_controller = self.class.const_get("#{params[:controller_name]}Controller").new
-      new_controller.request = ActionDispatch::TestRequest.new
-      set_instance_variables(new_controller) if params.key?(:instance_variables)
-      set_controller_hashes(new_controller)
-      new_controller
-    end
-
-    def template_name
-      params.fetch(:template, params[:action_name].to_s)
-    end
-
-    def options
+    def build_options
       options = {}
       options[:layout] = params.fetch(:layout, false)
       options[:locals] = hydrate(params[:locals]) if params.key?(:locals)
@@ -100,6 +92,10 @@ module MagicCarpet
       options[:collection] = hydrate(params[:collection]) if params.key?(:collection)
       options[:as] = params[:as] if params.key?(:as)
       options
+    end
+
+    def template_name
+      params.fetch(:template, params[:action_name].to_s)
     end
   end
 end
