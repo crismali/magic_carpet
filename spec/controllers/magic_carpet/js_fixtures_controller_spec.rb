@@ -126,6 +126,14 @@ module MagicCarpet
       expect(controller_session["wish_id"]).to eq("9")
     end
 
+    it "sets the cookies according to the cookies parameter" do
+      cookies_hash = { user_id: "4", wish_id: "9" }
+      get :index, cookies: cookies_hash, layout: true, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
+      controller_cookies = controller.send(:controller).send(:cookies)
+      expect(controller_cookies["user_id"]).to eq("4")
+      expect(controller_cookies["wish_id"]).to eq("9")
+    end
+
     it "sets the params according to params parameter" do
       params_hash = { user_id: "4", wish_id: "9" }
       get :index, params: params_hash, layout: true, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet

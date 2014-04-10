@@ -55,10 +55,16 @@ module MagicCarpet
     end
 
     def set_controller_hashes(controller_instance)
-      [:flash, :params, :session].each do |hash_name|
+      [:flash, :params, :session, :cookies].each do |hash_name|
         if params.key?(hash_name)
-          controller_instance.send(hash_name).merge!(params[hash_name])
+          set_controller_hash(controller_instance.send(hash_name), hash_name)
         end
+      end
+    end
+
+    def set_controller_hash(controller_hash, hash_name)
+      params[hash_name].each do |key, value|
+        controller_hash[key] = value
       end
     end
 
