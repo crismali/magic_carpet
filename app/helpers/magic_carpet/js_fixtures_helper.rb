@@ -5,6 +5,12 @@ module MagicCarpet
     def hydrate(value)
       if array?(value)
         hydrate_array(value)
+      elsif date?(value)
+        hydrate_date(value)
+      elsif time?(value)
+        hydrate_time(value)
+      elsif datetime?(value)
+        hydrate_datetime(value)
       elsif model?(value)
         hydrate_model(value)
       elsif number?(value)
@@ -35,6 +41,20 @@ module MagicCarpet
     def hydrate_number(hash)
       number = hash[:number]
       hash[:integer] ? number.to_i : number.to_f
+    end
+
+    def hydrate_date(hash)
+      Date.parse(hash[:date])
+    end
+
+    def hydrate_time(hash)
+      time = Time.parse(hash[:time])
+      time = time.utc if hash.key?(:utc)
+      time
+    end
+
+    def hydrate_datetime(hash)
+      DateTime.parse(hash[:datetime])
     end
 
     def hydrate_model(hash)
@@ -70,11 +90,27 @@ module MagicCarpet
     end
 
     def model?(value)
-      hash?(value) && value.key?(:model)
+      hash_with_key?(value, :model)
     end
 
     def number?(value)
-      hash?(value) && value.key?(:number)
+      hash_with_key?(value, :number)
+    end
+
+    def date?(value)
+      hash_with_key?(value, :date)
+    end
+
+    def time?(value)
+      hash_with_key?(value, :time)
+    end
+
+    def datetime?(value)
+      hash_with_key?(value, :datetime)
+    end
+
+    def hash_with_key?(value, key)
+      hash?(value) && value.key?(key)
     end
   end
 end

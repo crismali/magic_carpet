@@ -89,6 +89,41 @@ module MagicCarpet
         end
       end
 
+      context "dates and times" do
+        let(:now) { Time.now }
+
+        context "'dates'" do
+          it "returns a date" do
+            hash = { date: now.to_s }.with_indifferent_access
+            actual = helper.hydrate(hash)
+            expect(actual).to eq(Date.today)
+          end
+        end
+
+        context "'times'" do
+          it "returns a time" do
+            hash = { time: now.to_s }.with_indifferent_access
+            actual = helper.hydrate(hash)
+            expect(actual.to_i).to eq(now.to_i)
+          end
+
+          it "returns a utc time when specified" do
+            hash = { time: now.to_s, utc: "true" }.with_indifferent_access
+            actual = helper.hydrate(hash)
+            expect(actual).to be_utc
+          end
+        end
+
+        context "'date times'" do
+          it "returns a date time" do
+            hash = { datetime: now.to_s }.with_indifferent_access
+            actual = helper.hydrate(hash)
+            expect(actual.class).to eq(DateTime)
+            expect(actual.to_time.to_i).to eq(now.to_time.to_i)
+          end
+        end
+      end
+
       context "'models'" do
         it "converts the hash into the model specified by 'model'" do
           hash = { model: "Wish", text: "wish text" }.with_indifferent_access
