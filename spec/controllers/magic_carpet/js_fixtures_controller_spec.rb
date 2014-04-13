@@ -153,6 +153,34 @@ module MagicCarpet
           get :index, controller_name: "NonExistant", action_name: "plain", use_route: :magic_carpet
         end
 
+        it "logs Time parse errors" do
+          expect(controller.logger).to receive(:error) do |message|
+            expect(message).to match("no time information in \"invalid-time\"\n")
+            expect(message).to match(/\n\s\s\s\s.*magic_carpet\//)
+          end
+          instance_variables_hash = {
+            wishes: [
+              { id: 1, model: "Wish", created_at: { time: "invalid-time" } },
+              { id: 1, model: "Wish", created_at: { time: Time.now.to_s } }
+            ]
+          }
+          get :index, controller_name: "Wishes", action_name: "index", instance_variables: instance_variables_hash, use_route: :magic_carpet
+        end
+
+        it "logs Date/DateTime parse errors" do
+          expect(controller.logger).to receive(:error) do |message|
+            expect(message).to match("invalid date\n")
+            expect(message).to match(/\n\s\s\s\s.*magic_carpet\//)
+          end
+          instance_variables_hash = {
+            wishes: [
+              { id: 1, model: "Wish", created_at: { date: "invalid-date" } },
+              { id: 1, model: "Wish", created_at: { date: Date.today.to_s } }
+            ]
+          }
+          get :index, controller_name: "Wishes", action_name: "index", instance_variables: instance_variables_hash, use_route: :magic_carpet
+        end
+
         it "logs NoMethodErrors" do
           expect(controller.logger).to receive(:error) do |message|
             expect(message).to match("NoMethodError: undefined method `text' for #<User:")
@@ -175,6 +203,32 @@ module MagicCarpet
         it "reports missing/misnamed controllers" do
           get :index, controller_name: "NonExistant", action_name: "plain", use_route: :magic_carpet
           expected = { error: "NonExistantController not found." }.to_json
+          expect(body).to eq(expected)
+          expect(response.code).to eq("400")
+        end
+
+        it "reports Time parse errors" do
+          instance_variables_hash = {
+            wishes: [
+              { id: 1, model: "Wish", created_at: { time: "invalid-time" } },
+              { id: 1, model: "Wish", created_at: { time: Time.now.to_s } }
+            ]
+          }
+          get :index, controller_name: "Wishes", action_name: "index", instance_variables: instance_variables_hash, use_route: :magic_carpet
+          expected = { error: "no time information in \"invalid-time\"" }.to_json
+          expect(body).to eq(expected)
+          expect(response.code).to eq("400")
+        end
+
+        it "reports Date/DateTime parse errors" do
+          instance_variables_hash = {
+            wishes: [
+              { id: 1, model: "Wish", created_at: { date: "invalid-date" } },
+              { id: 1, model: "Wish", created_at: { date: Date.today.to_s } }
+            ]
+          }
+          get :index, controller_name: "Wishes", action_name: "index", instance_variables: instance_variables_hash, use_route: :magic_carpet
+          expected = { error: "invalid date" }.to_json
           expect(body).to eq(expected)
           expect(response.code).to eq("400")
         end

@@ -21,6 +21,11 @@ module MagicCarpet
       render_error(message)
     end
 
+    rescue_from "ArgumentError" do |exception|
+      log_error(exception)
+      render_error(exception.message)
+    end
+
     rescue_from "ActionView::MissingTemplate" do |exception|
       log_error(exception)
       render_error(exception.message)
