@@ -49,7 +49,7 @@ module MagicCarpet
     end
 
     def render_error(message)
-      render json: { error: message }, status: 400
+      render json: { error: "Magic Carpet Error: #{message}" }, status: 400
     end
 
     def controller

@@ -202,7 +202,7 @@ module MagicCarpet
       context "json" do
         it "reports missing/misnamed controllers" do
           get :index, controller_name: "NonExistant", action_name: "plain", use_route: :magic_carpet
-          expected = { error: "NonExistantController not found." }.to_json
+          expected = { error: "Magic Carpet Error: NonExistantController not found." }.to_json
           expect(body).to eq(expected)
           expect(response.code).to eq("400")
         end
@@ -215,7 +215,7 @@ module MagicCarpet
             ]
           }
           get :index, controller_name: "Wishes", action_name: "index", instance_variables: instance_variables_hash, use_route: :magic_carpet
-          expected = { error: "no time information in \"invalid-time\"" }.to_json
+          expected = { error: "Magic Carpet Error: no time information in \"invalid-time\"" }.to_json
           expect(body).to eq(expected)
           expect(response.code).to eq("400")
         end
@@ -228,7 +228,7 @@ module MagicCarpet
             ]
           }
           get :index, controller_name: "Wishes", action_name: "index", instance_variables: instance_variables_hash, use_route: :magic_carpet
-          expected = { error: "invalid date" }.to_json
+          expected = { error: "Magic Carpet Error: invalid date" }.to_json
           expect(body).to eq(expected)
           expect(response.code).to eq("400")
         end
@@ -236,27 +236,27 @@ module MagicCarpet
         it "reports missing/misnamed models" do
           locals = { wish: { model: "Dish", text: "wish text" } }
           get :index, locals: locals, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
-          expected = { error: "Dish not found." }.to_json
+          expected = { error: "Magic Carpet Error: Dish not found." }.to_json
           expect(body).to eq(expected)
           expect(response.code).to eq("400")
         end
 
         it "reports missing template errors" do
           get :index, controller_name: "Wishes", template: "fake", use_route: :magic_carpet
-          expect(JSON.parse(body)["error"]).to match("Missing template wishes/fake, application/fake")
+          expect(JSON.parse(body)["error"]).to match("Magic Carpet Error: Missing template wishes/fake, application/fake")
           expect(response.code).to eq("400")
         end
 
         it "reports missing local variable errors" do
           get :index, controller_name: "Wishes", template: "locals", use_route: :magic_carpet
-          expected = { error: "undefined local variable or method `some_hash' for 'locals' template." }.to_json
+          expected = { error: "Magic Carpet Error: undefined local variable or method `some_hash' for 'locals' template." }.to_json
           expect(body).to eq(expected)
           expect(response.code).to eq("400")
         end
 
         it "reports missing partial errors" do
           get :index, controller_name: "Wishes", partial: "zuh", use_route: :magic_carpet
-          expect(JSON.parse(body)["error"]).to match("Missing partial wishes/zuh, application/zuh")
+          expect(JSON.parse(body)["error"]).to match("Magic Carpet Error: Missing partial wishes/zuh, application/zuh")
           expect(response.code).to eq("400")
         end
 
