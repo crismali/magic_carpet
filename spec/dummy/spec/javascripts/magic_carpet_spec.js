@@ -237,6 +237,55 @@ describe("MagicCarpet", function() {
     });
 
     describe("templates", function(){
+      it("renders templates", function(){
+        subject.request({
+          controller_name: "Wishes",
+          template: "plain"
+        });
+        expect($("#magic-carpet h1")[0]).toBeDefined();
+      });
+
+      it("action_name can be used instead of template", function(){
+        subject.request({
+          controller_name: "Wishes",
+          action_name: "plain"
+        });
+        expect($("#magic-carpet h1")[0]).toBeDefined();
+      });
+
+      it("renders partials", function(){
+        subject.request({
+          controller_name: "Wishes",
+          partial: "some_partial"
+        });
+        expect($("#magic-carpet h1")[0]).toBeDefined();
+      });
+
+      it("renders local variables", function(){
+        subject.request({
+          controller_name: "Wishes",
+          partial: "wish_list_item",
+          locals: {
+            wish: { id: 1, model: "Wish", text: "some wish text" }
+          }
+        });
+        expect($("#magic-carpet li")[0]).toBeDefined();
+      });
+
+      it("renders collections (with 'as' option)", function(){
+        subject.request({
+          controller_name: "Wishes",
+          partial: "wish_list_item",
+          collection: [
+            { id: 1, model: "Wish", text: "wish text" },
+            { id: 2, model: "Wish", text: "wish text" },
+            { id: 3, model: "Wish", text: "wish text" }
+          ],
+          as: "wish"
+        });
+        expect($("#magic-carpet li").length).toEqual(3);
+      });
+
       it("renders templates with instance variables", function(){
         subject.request({
           controller_name: "Wishes",
@@ -257,7 +306,7 @@ describe("MagicCarpet", function() {
               controller_name: "blort",
               action_name: "new"
             });
-          }).toThrow(new Error("wrong constant name blortController for 'new' template."));
+          }).toThrow(new Error("Magic Carpet Error: wrong constant name blortController for 'new' template."));
         });
       });
     });
