@@ -1,6 +1,7 @@
 module MagicCarpet
   module JsFixturesHelper
     attr_accessor :models
+    NIL = "nil"
 
     def hydrate(value)
       if array?(value)
@@ -19,6 +20,12 @@ module MagicCarpet
         hydrate_array(value.values)
       elsif hash?(value)
         hydrate_hash(value)
+      elsif is_nil?(value)
+        nil
+      elsif true?(value)
+        true
+      elsif false?(value)
+        false
       else
         value
       end
@@ -111,6 +118,22 @@ module MagicCarpet
 
     def hash_with_key?(value, key)
       hash?(value) && value.key?(key)
+    end
+
+    def is_nil?(value)
+      same_string?(value, NIL)
+    end
+
+    def true?(value)
+      same_string?(value, true)
+    end
+
+    def false?(value)
+      same_string?(value, false)
+    end
+
+    def same_string?(value, string)
+      value.is_a?(String) && value == string.to_s
     end
   end
 end

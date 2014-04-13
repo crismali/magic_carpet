@@ -124,6 +124,24 @@ module MagicCarpet
         end
       end
 
+      context "nil" do
+        it "converts a string of 'nil' to nil" do
+          expect(helper.hydrate("nil")).to be_nil
+        end
+      end
+
+      context "false" do
+        it "converts a string of 'false' to false" do
+          expect(helper.hydrate("false")).to eq(false)
+        end
+      end
+
+      context "true" do
+        it "converts a string of 'true' to true" do
+          expect(helper.hydrate("true")).to eq(true)
+        end
+      end
+
       context "'models'" do
         it "converts the hash into the model specified by 'model'" do
           hash = { model: "Wish", text: "wish text" }.with_indifferent_access
