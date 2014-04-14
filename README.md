@@ -11,6 +11,7 @@ Magic Carpet can:
   * pretty much do whatever you want with your controller's `render` method
   * append your templates to the DOM for you
   * be synchronous or asynchronous
+
 It also doesn't monkeypatch anything, so nothing weird will start happening during your Ruby tests or development.
 
 ## Installation
@@ -35,15 +36,13 @@ mount MagicCarpet::Engine => "/magic_carpet" if defined?(MagicCarpet)
 ### Pulling in the companion JavaScript
 **Magic Carpet Js Dependencies:** [jQuery](https://jquery.org/) (only for `MagicCarpet.request`; also load order doesn't matter).
 
-**Note:** you do not _need_ the companion JavaScript to use Magic Carpet, it will just be easier if you do. Probably.
-
 Anyway, you can throw this:
 ```javascript
 //= require magic_carpet/magic_carpet
 ```
 wherever the Asset Pipeline will pick up on it. If you're using [jasmine-rails](https://github.com/searls/jasmine-rails), you can put it at the top of any file in `spec/javascripts/helpers`. Or you can drop the [this file](https://github.com/daytonn/magic_carpet/blob/master/app/assets/javascripts/magic_carpet/magic_carpet.js) into wherever your test framework of choice will pick up on it.
 ### Without the companion JavaScript
-Just make a `get` request to `/magic_carpet` with whatever paremeters you need to set the proper state on the controller to prepare the template. The response will either be your template as a string or a JSON error. You'll miss out on some caching and other cool features, but that's on you.
+Just make a `get` request to `/magic_carpet` with whatever paremeters you need to set the proper state on the controller to prepare the template.
 ## Usage
 Just request the template you want with the specified state on the controller like so:
 ```javascript
@@ -150,6 +149,7 @@ Here's a list of all the options you can pass `MagicCarpet.request`:
   * `flash`
   * `cookies`
   * `layout`
+
 ## Type Coercion
 ### Booleans and Nil
 Booleans and `nil` can be coerced by simply sending a string of their name, ie `"true"`, `"false"`, and `"nil"`.
@@ -186,7 +186,7 @@ If you need a number to actually _be_ a number (ie not a `String`), just tell Ma
 // or these
 {
   number: 5.5,
-  integer: false
+  integer: false // doesn't matter what's here, if the integer key is present, you get an integer.
 }
 // or these
 {
