@@ -40,7 +40,7 @@ Anyway, you can throw this:
 ```javascript
 //= require magic_carpet/magic_carpet
 ```
-wherever the Asset Pipeline will pick up on it. If you're using [jasmine-rails](https://github.com/searls/jasmine-rails), you can put it at the top of any file in `spec/javascripts/helpers`. Or you can drop the [this file](https://github.com/daytonn/magic_carpet/blob/master/app/assets/javascripts/magic_carpet/magic_carpet.js) into wherever your test framework of choice will pick up on it.
+wherever the Asset Pipeline will pick up on it. If you're using [jasmine-rails](https://github.com/searls/jasmine-rails), you can put it at the top of any file in `spec/javascripts/helpers`. Or you can drop the [this file](https://github.com/crismali/magic_carpet/blob/master/app/assets/javascripts/magic_carpet/magic_carpet.js) into wherever your test framework of choice will pick up on it.
 ### Without the companion JavaScript
 Just make a `get` request to `/magic_carpet` with whatever paremeters you need to set the proper state on the controller to prepare the template.
 ## Usage
