@@ -2,6 +2,8 @@
   async: false,
   asyncComplete: true,
   cache: {},
+  host: "http://localhost:3000",
+  route: "/magic_carpet",
 
   initialize: function() {
     this.bindAll();
@@ -54,7 +56,7 @@
     this.lastRequest = data;
     this.asyncComplete = false;
     $.ajax({
-      url: "/magic_carpet",
+      url: this.host + this.route,
       method: "get",
       async: this.async,
       data: data

@@ -5,6 +5,7 @@ module MagicCarpet
     include JsFixturesHelper
 
     def index
+      headers["Access-Control-Allow-Origin"] = "*"
       render text: controller.render_to_string(*build_options)
     end
 

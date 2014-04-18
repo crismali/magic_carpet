@@ -17,6 +17,14 @@ describe("MagicCarpet", function() {
     expect(subject.asyncComplete).toBeTrue();
   });
 
+  it("has its host property default to localhost:3000", function(){
+    expect(subject.host).toEqual("http://localhost:3000");
+  });
+
+  it("has its route property set to /magic_carpet by default", function(){
+    expect(subject.route).toEqual("/magic_carpet");
+  });
+
   it("has an object for caching request results", function(){
     expect(subject.cache).toBeObject();
   });
@@ -154,8 +162,8 @@ describe("MagicCarpet", function() {
       arg = $.ajax.calls.argsFor(0)[0];
     });
 
-    it("makes a get request to /magic_carpet", function(){
-      expect(arg.url).toEqual("/magic_carpet");
+    it("makes a get request to the host at route /magic_carpet", function(){
+      expect(arg.url).toEqual(subject.host + subject.route);
       expect(arg.method).toEqual("get");
     });
 

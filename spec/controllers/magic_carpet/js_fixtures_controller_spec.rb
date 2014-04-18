@@ -10,6 +10,11 @@ module MagicCarpet
       expect(body).to match("<h1>Plain</h1>\n")
     end
 
+    it "sets the access control allow origin header to allow all" do
+      get :index, controller_name: "Wishes", template: "plain", use_route: :magic_carpet
+      expect(response.headers["Access-Control-Allow-Origin"]).to eq("*")
+    end
+
     it "renders based on controller and action names if there's no template param" do
       get :index, controller_name: "Wishes", action_name: "plain", use_route: :magic_carpet
       expect(body).to match("<h1>Plain</h1>\n")
